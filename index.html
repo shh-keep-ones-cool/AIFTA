@@ -629,7 +629,7 @@ function selectOption(idx){
     
     let pName = addScoreToPlayer(pts);
     lockRound();
-    showToast(`🎉 CORRECT! +${pts} pts cho ${pName}!`);
+    showToast(`🎉 CORRECT! +${pts} pts for ${pName}!`);
     burstConfetti();
   } else {
     btn.disabled = true;
@@ -645,7 +645,7 @@ function selectOption(idx){
     lockRound();
     
     let pName = addScoreToPlayer(-30); 
-    showToast(`💥 SAI! ${pName} bị trừ 30 điểm.`);
+    showToast(`💥 WRONG! ${pName} has 30 points deducted.`);
     
     els.collapseOverlay.classList.add('show');
     els.bridgeStage.classList.add('shake');
@@ -656,7 +656,7 @@ function selectOption(idx){
       markCorrectOption();
       state.solved = true;
       els.nextPlayerBtn.style.display = 'none';
-      showToast(`❌ 3 lần sai! Đáp án đúng đã hiển thị.`);
+      showToast(`❌ NOOB! This is the correct answer.`);
     }
   }
 }
@@ -677,7 +677,7 @@ function guessLetter(L){
     
     // Cộng 20 điểm trên mỗi chữ đoán đúng
     let pName = addScoreToPlayer(20);
-    showToast(`✅ Chính xác! +20 pts cho ${pName}.`);
+    showToast(`✅ CORRECT! +20 pts for ${pName}.`);
     
     // Check Win
     const need = neededLetters(r.word);
@@ -686,7 +686,7 @@ function guessLetter(L){
       state.solved = true;
       els.nextPlayerBtn.style.display = 'none';
       lockRound();
-      showToast(`🎉 HOÀN THÀNH TỪ! Chúc mừng ${pName}!`);
+      showToast(`🎉 WORD COMPLETED! Congratulations, ${pName}!`);
       burstConfetti();
     }
   } else {
@@ -700,7 +700,7 @@ function guessLetter(L){
       state.failed = true;
       lockRound();
       let pName = addScoreToPlayer(-50);
-      showToast(`💥 SẬP CẦU! ${pName} bị trừ 50 điểm.`);
+      showToast(`💥 BRIDGE COLLAPSE! ${pName} loses 50 points.`);
       
       els.collapseOverlay.classList.add('show');
       els.bridgeStage.classList.add('shake');
