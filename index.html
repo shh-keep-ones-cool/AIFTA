@@ -54,9 +54,11 @@
   .help-btn{border:1px solid var(--line-strong);background:var(--panel-soft);color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:12px;border-radius:999px;padding:8px 14px;cursor:pointer;margin-top:8px;}
   .help-btn:hover{border-color:var(--gold);color:var(--gold);}
 
-  .rules{max-width:1180px;margin:0 auto 18px;background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;font-size:13.5px;line-height:1.65;color:var(--ink-dim);display:none;}
+  .rules{max-width:1180px;margin:0 auto 18px;background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;font-size:14px;line-height:1.65;color:var(--ink-dim);display:none;}
   .rules.open{display:block;}
   .rules b{color:var(--ink);}
+  .rules ul { margin: 8px 0; padding-left: 20px; }
+  .rules li { margin-bottom: 6px; }
 
   /* ---------- Main grid ---------- */
   .stage{display:grid;grid-template-columns:260px 1fr 240px;gap:16px;align-items:stretch;margin-bottom:18px;}
@@ -69,10 +71,6 @@
   @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
   .player-input{background:rgba(0,0,0,0.2);border:1px dashed var(--saffron);border-radius:8px;color:var(--ink);font-family:'Sora',sans-serif;font-weight:700;font-size:16px;text-align:center;width:100%;padding:10px;outline:none;transition:0.3s;}
   .player-input:focus{border-style:solid;background:var(--panel-soft);box-shadow: 0 0 10px rgba(255,159,69,0.3);}
-  .lifeline-box{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:auto;}
-  .lifeline-btn{background:var(--panel-soft);border:1px solid var(--line-strong);color:var(--ink);padding:10px;border-radius:8px;font-family:'Sora',sans-serif;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;}
-  .lifeline-btn:hover:not(:disabled){background:var(--saffron);color:#000;border-color:var(--saffron);}
-  .lifeline-btn:disabled{display:none;} /* Ẩn luôn nút không dùng cho chế độ đó */
 
   /* LEADERBOARD CARD */
   .leaderboard-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;}
@@ -108,6 +106,7 @@
   .qtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
   .cat-tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:5px 11px;border-radius:999px;}
   .cat-tag.main{background:rgba(34,176,138,.16);color:var(--jade);border:1px solid rgba(34,176,138,.35);}
+  .q-bonus{background:rgba(255,159,69,.16);color:var(--saffron);border:1px solid var(--saffron); font-weight:700;}
   
   .qtext{font-family:'Fraunces',serif;font-size:clamp(18px,2.4vw,23px);font-weight:600;line-height:1.35;margin:0 0 18px; text-align: left;}
   .qmedia-box { margin-bottom: 20px; display: none; }
@@ -128,7 +127,6 @@
   .letter-box{width:28px;height:38px;border-bottom:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;color:var(--ink);transition: 0.3s;}
   .letter-box.symbol{border-bottom:none; color: var(--ink-faint);}
   .letter-box.pop{animation:pop .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
-  .letter-box.hint-reveal{color: var(--saffron); border-color: var(--saffron); text-shadow: 0 0 10px var(--saffron);}
   @keyframes pop{0%{transform:scale(.4);opacity:0;}70%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
 
   /* ---------- Keyboard ---------- */
@@ -145,7 +143,6 @@
   .btn{font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:11px;border:1px solid var(--line-strong);background:var(--panel-soft);color:var(--ink);cursor:pointer;transition:.2s;letter-spacing:.01em;}
   .btn:hover{transform:translateY(-1px);border-color:var(--gold);}
   .btn.primary{background:linear-gradient(135deg,var(--saffron),var(--saffron-deep));border:none;color:#241300;box-shadow:0 10px 24px rgba(255,159,69,.25);}
-  .btn.ghost{background:transparent;color:var(--ink-faint);}
   
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#241500;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px;box-shadow:0 14px 34px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.35s;z-index:50;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -172,11 +169,8 @@
         <div class="lbl">Question</div>
         <div class="num" id="qNum">1<span id="qTotal">/15</span></div>
       </div>
-      <!-- Nút bật tắt nhạc -->
-      <button class="help-btn" id="musicToggleBtn">🎵 Bật nhạc</button>
-      <button class="help-btn" id="helpBtn">? Rules</button>
-
-      <!-- Thẻ chứa nhạc ẩn (Thuộc tính loop giúp nhạc phát lại liên tục) -->
+      <button class="help-btn" id="musicToggleBtn">🎵 Music</button>
+      <button class="help-btn" id="helpBtn">📖 Rule</button>
       <audio id="bgMusic" loop>
         <source src="audio game.mp3" type="audio/mpeg">
       </audio>
@@ -184,25 +178,22 @@
   </div>
 
   <div class="rules" id="rulesBox">
-    <b>Rules - Hot Seat Edition:</b> <br>
-    - Base score per correct answer is <b>100 pts</b>.<br>
-    - <b>Multiple Choice (A,B,C,D):</b> You can use <b>50:50</b> (-20 pts). If you pick the wrong option, the bridge collapses instantly (Fail) and you lose 10 pts.<br>
-    - <b>Fill in the Blanks:</b> You can use <b>Reveal Letter</b> (-10 pts). Manually guessing a letter costs <b>-5 pts</b>. You have 3 lives (3 wrong letter guesses) before the bridge collapses.<br>
-    - Once the bridge collapses, your turn is over!
+    <b>Rule:</b> <br>
+    <ul>
+      <li><b>Trắc nghiệm (A, B, C, D):</b> Trả lời đúng được <b>+100 điểm</b>. Trả lời sai bị <b>-30 điểm</b>, sập cầu và mất lượt. Người chơi tiếp theo sẽ tiếp tục trả lời. Sau <b>3 lần sai</b>, đáp án sẽ được hiển thị.</li>
+      <li><b>Điền từ (Ô chữ Hangman):</b> Mỗi lần đoán đúng 1 chữ cái được <b>+20 điểm</b>. Đoán sai 3 lần sẽ bị sập cầu, <b>-50 điểm</b> và mất lượt. Người chơi tiếp theo sẽ tiếp tục đoán các chữ cái còn lại.</li>
+    </ul>
   </div>
 
   <div class="stage">
+    <!-- HOT SEAT AREA -->
     <div class="hot-seat-card">
       <div class="hot-seat-title">🔥 HOT SEAT</div>
       <div class="avatar-icon">🙋‍♂️</div>
-      <input type="text" class="player-input" id="playerName" placeholder="Enter student name..." value="">
-      
-      <div class="lifeline-box">
-        <button class="lifeline-btn" id="btn5050">⚖️ 50:50 (-20pt)</button>
-        <button class="lifeline-btn" id="btnReveal">🔤 Reveal Letter (-10pt)</button>
-      </div>
+      <input type="text" class="player-input" id="playerName" placeholder="Nhập tên người chơi...">
     </div>
 
+    <!-- BRIDGE AREA -->
     <div class="bridge-stage" id="bridgeStage">
       <svg id="bridgeSvg" viewBox="0 0 920 340" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -224,6 +215,7 @@
         <circle cx="460" cy="95" r="70" fill="url(#sunGlow)"/>
         <circle cx="460" cy="95" r="22" fill="#F2C14E" opacity=".85"/>
 
+        <!-- LEFT PIER -->
         <g id="leftPier">
           <rect x="88" y="112" width="22" height="140" fill="#0B1E3D"/>
           <polygon points="60,112 138,112 122,88 76,88" fill="#22B08A"/>
@@ -232,6 +224,7 @@
           <rect x="94" y="46" width="10" height="14" fill="#F2C14E"/>
         </g>
 
+        <!-- RIGHT PIER -->
         <g id="rightPier">
           <rect x="810" y="112" width="22" height="140" fill="#0B1E3D"/>
           <path d="M778,112 C778,60 862,60 862,112 Z" fill="#FF9F45"/>
@@ -239,12 +232,14 @@
           <circle cx="820" cy="58" r="7" fill="#F2C14E"/>
         </g>
 
+        <!-- CABLES -->
         <path class="cable" d="M100,112 C300,168 620,168 820,112"/>
         <path class="cable" d="M100,120 C300,178 620,178 820,120" opacity=".6"/>
 
         <g id="hangersGroup"></g>
         <g id="planksGroup"></g>
 
+        <!-- BOAT -->
         <g class="boat" transform="translate(360,238)">
           <path d="M0,20 L130,20 L112,42 L18,42 Z" fill="#7C5A3A"/>
           <rect x="55" y="-28" width="4" height="48" fill="#3E2A1A"/>
@@ -254,19 +249,22 @@
           <rect x="64" y="6" width="16" height="12" rx="2" fill="#F2C14E"/>
         </g>
 
+        <!-- SEA -->
         <rect x="0" y="252" width="920" height="88" fill="url(#sea)"/>
         <path class="wave-line" d="M0,266 Q40,256 80,266 T160,266 T240,266 T320,266 T400,266 T480,266 T560,266 T640,266 T720,266 T800,266 T880,266 T960,266"/>
         <path class="wave-line" d="M0,290 Q40,280 80,290 T160,290 T240,290 T320,290 T400,290 T480,290 T560,290 T640,290 T720,290 T800,290 T880,290 T960,290" opacity=".14"/>
 
+        <!-- COLLAPSE OVERLAY -->
         <g class="collapse-overlay" id="collapseOverlay">
           <rect x="0" y="0" width="920" height="340" fill="#08132A" opacity=".75"/>
           <text x="460" y="178" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="28" fill="#FF6B6B">BRIDGE COLLAPSED!</text>
-          <text x="460" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F5F3EC">You lost your turn and 10 points.</text>
+          <text x="460" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F5F3EC">Change Player & Rebuild to try again.</text>
         </g>
       </svg>
       <div class="lives-row" id="livesRow"></div>
     </div>
 
+    <!-- LEADERBOARD AREA -->
     <div class="leaderboard-card">
       <div class="leaderboard-title">🏆 LEADERBOARD</div>
       <div class="lb-empty" id="lbEmpty">No scores yet.<br>Be the first!</div>
@@ -276,12 +274,16 @@
 
   <div class="qcard" id="qCardBox">
     <div class="qtop">
-      <span class="cat-tag main" id="catTag">QUESTION</span>
+      <div>
+        <span class="cat-tag main" id="catTag">QUESTION</span>
+        <span class="cat-tag q-bonus" id="bonusTag" style="display:none; margin-left: 6px;">⭐ BONUS POINTS</span>
+      </div>
       <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);" id="livesCounter">Lives left: <b id="wrongLeft" style="color:var(--jade);">3</b>/3</span>
     </div>
     
     <p class="qtext" id="qText">Loading question...</p>
     
+    <!-- IMAGE / GIF BOX -->
     <div class="qmedia-box" id="qMediaBox">
       <img id="qMediaImg" src="" alt="Question Image">
     </div>
@@ -293,8 +295,7 @@
   <div class="keyboard" id="keyboard"></div>
 
   <div class="controls">
-    <button class="btn ghost" id="revealBtn">👁 Show Answer</button>
-    <button class="btn" id="resetRoundBtn">↺ Replay Round</button>
+    <button class="btn" id="nextPlayerBtn" style="display:none; border-color: var(--saffron); color: var(--saffron);">👤 Next Player (Rebuild Bridge)</button>
     <button class="btn primary" id="nextBtn">Next Question →</button>
   </div>
 
@@ -304,10 +305,25 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ================= BGM / NHẠC NỀN ================= */
+const bgMusic = document.getElementById('bgMusic');
+const musicToggleBtn = document.getElementById('musicToggleBtn');
+let isMusicPlaying = false;
+bgMusic.volume = 0.4; 
+
+musicToggleBtn.addEventListener('click', () => {
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    musicToggleBtn.textContent = '🎵 Music';
+    isMusicPlaying = false;
+  } else {
+    bgMusic.play().catch(error => console.log("Trình duyệt chặn autoplay."));
+    musicToggleBtn.textContent = '🔇 Mute music';
+    isMusicPlaying = true;
+  }
+});
+
 /* ================= DATA ================= */
-// Các thuộc tính mới: 
-// - type: 'mc' (Trắc nghiệm có ABCD) hoặc 'fitb' (Đoán ô chữ)
-// - img: Chèn link ảnh (Nếu có)
 const rounds = [
   {n:1, type:'mc', q:"What does AIFTA stand for?",
    options:["ASEAN - India Free Trade Agreement","ASEAN - International Free Trade Agreement","Asia - India Free Trade Agreement","ASEAN - Indian Financial Trade Agreement"],
@@ -321,7 +337,7 @@ const rounds = [
    correct:2},
   
   {n:4, type:'mc', q:"When someone in India gently tilts their head from side to side in a fast side-to-side motion, what does it most likely signify?",
-   img:"3.gif",
+   img:"4.gif",
    options:["Yes, maybe, I agree, or I am listening.","An express refusal and complete disagreement.","A request to turn down the ambient music volume.","An uncomfortable muscle spasm in the neck."],
    correct:0},
   
@@ -356,7 +372,7 @@ const rounds = [
   
   {n:13, type:'mc', q:"Why did Indian negotiators fight so fiercely over palm oil imports from Malaysia and Indonesia during AIFTA negotiations?",
    options:["Because palm oil was deemed too high in calories.","To encourage everyone to use olive oil instead.","To protect domestic oilseed farmers and refining industries.","Because ASEAN refused to supply coconut oil."],
-   correct:2}, // Fixed based on factual accuracy (Protecting domestic farmers)
+   correct:2},
   
   {n:14, type:'mc', q:"A canned tuna shipment from Vietnam to India uses tuna caught by a Panama-flagged vessel in international waters. Does it qualify for AIFTA origin under Wholly Obtained (WO)?",
    options:["Yes, as long as the tin can is manufactured in Vietnam.","No, unless Panama signs an agreement with AIFTA.","No, because the vessel does not fly an AIFTA member flag.","Yes, because tuna swims freely in international waters."],
@@ -370,16 +386,19 @@ const rounds = [
 
 /* ================= STATE ================= */
 const state = {
-  i: 0, wrong: 0, guessed: new Set(),
-  solved: false, failed: false,
-  leaderboard: {}, // { "Player Name": points }
-  used5050: false, usedReveal: false,
-  manualGuesses: 0
+  i: 0, 
+  wrong: 0, 
+  qFails: 0, // Track failures per question
+  guessed: new Set(),
+  wrongOptions: new Set(),
+  solved: false, 
+  failed: false,
+  leaderboard: {}
 };
 
 const els = {
   qNum: document.getElementById('qNum'),
-  catTag: document.getElementById('catTag'),
+  bonusTag: document.getElementById('bonusTag'),
   qText: document.getElementById('qText'),
   qMediaBox: document.getElementById('qMediaBox'),
   qMediaImg: document.getElementById('qMediaImg'),
@@ -397,9 +416,8 @@ const els = {
   playerName: document.getElementById('playerName'),
   lbList: document.getElementById('lbList'),
   lbEmpty: document.getElementById('lbEmpty'),
-  // Lifelines
-  btn5050: document.getElementById('btn5050'),
-  btnReveal: document.getElementById('btnReveal')
+  nextPlayerBtn: document.getElementById('nextPlayerBtn'),
+  nextBtn: document.getElementById('nextBtn')
 };
 
 /* ================= BUILD BRIDGE (3 Planks) ================= */
@@ -482,12 +500,11 @@ function addScoreToPlayer(points) {
   return pName;
 }
 
-/* ================= WORD HELPERS (With Numbers & Symbols) ================= */
-// Tính ký tự cần điền (A-Z và 0-9)
+/* ================= WORD HELPERS ================= */
 function neededLetters(word){
   return new Set(word.replace(/[^A-Z0-9]/g,'').split(''));
 }
-function renderWord(word, guessedSet, forceReveal, highlightChar = null){
+function renderWord(word, guessedSet, forceReveal){
   els.wordZone.innerHTML = '';
   word.split(' ').forEach(w=>{
     const grp = document.createElement('div');
@@ -495,7 +512,6 @@ function renderWord(word, guessedSet, forceReveal, highlightChar = null){
     [...w].forEach(ch=>{
       const box = document.createElement('div');
       
-      // Tự động hiển thị các ký tự không phải chữ/số (dấu cách, gạch chéo, v.v.)
       if (!/[A-Z0-9]/.test(ch)) {
         box.className = 'letter-box symbol';
         box.textContent = ch;
@@ -503,7 +519,6 @@ function renderWord(word, guessedSet, forceReveal, highlightChar = null){
         box.className = 'letter-box';
         if(forceReveal || guessedSet.has(ch)){
           box.textContent = ch;
-          if(ch === highlightChar) box.classList.add('hint-reveal', 'pop');
         } else {
           box.textContent = '';
         }
@@ -514,7 +529,7 @@ function renderWord(word, guessedSet, forceReveal, highlightChar = null){
   });
 }
 
-/* ================= KEYBOARD (A-Z and 0-9) ================= */
+/* ================= KEYBOARD ================= */
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 function buildKeyboard(){
   els.keyboard.innerHTML = '';
@@ -530,17 +545,23 @@ function buildKeyboard(){
 function currentRound(){ return rounds[state.i]; }
 
 function renderRound(){
-  // Reset states
-  state.wrong = 0; state.guessed = new Set(); 
-  state.solved = false; state.failed = false;
-  state.used5050 = false; state.usedReveal = false;
-  state.manualGuesses = 0;
+  state.wrong = 0; 
+  state.qFails = 0;
+  state.guessed = new Set(); 
+  state.wrongOptions = new Set();
+  state.solved = false; 
+  state.failed = false;
+
+  els.nextPlayerBtn.style.display = 'none';
 
   const r = currentRound();
   els.qNum.innerHTML = (state.i+1) + '<span>/'+rounds.length+'</span>';
-  els.qText.innerText = 'Q' + r.n + '. ' + r.q; // innerText để hiển thị xuống dòng
+  els.qText.innerText = 'Q' + r.n + '. ' + r.q;
+  
+  // Tag Bonus Point
+  if(r.n === 8 || r.n === 13) els.bonusTag.style.display = 'inline-block';
+  else els.bonusTag.style.display = 'none';
 
-  // Xử lý hình ảnh (Nếu có)
   if(r.img) {
     els.qMediaImg.src = r.img;
     els.qMediaBox.style.display = 'block';
@@ -548,18 +569,11 @@ function renderRound(){
     els.qMediaBox.style.display = 'none';
   }
 
-  // Toggle UI dựa trên chế độ câu hỏi
-  els.btn5050.disabled = false;
-  els.btnReveal.disabled = false;
-
   if (r.type === 'mc') {
-    // Mode Trắc Nghiệm (A,B,C,D)
     els.wordZone.style.display = 'none';
     els.keyboard.style.display = 'none';
     els.optionsBox.style.display = 'grid';
-    els.btn5050.style.display = 'flex';
-    els.btnReveal.style.display = 'none';
-    els.livesCounter.style.display = 'none'; // MC chỉ cần 1 phát là sập cầu
+    els.livesCounter.style.display = 'none';
 
     els.optionsBox.innerHTML = '';
     r.options.forEach((opt, idx)=>{
@@ -569,62 +583,131 @@ function renderRound(){
       b.addEventListener('click', ()=>selectOption(idx));
       els.optionsBox.appendChild(b);
     });
-
   } else {
-    // Mode Điền Từ (Hangman)
     els.wordZone.style.display = 'flex';
     els.keyboard.style.display = 'grid';
     els.optionsBox.style.display = 'none';
-    els.btn5050.style.display = 'none';
-    els.btnReveal.style.display = 'flex';
     els.livesCounter.style.display = 'inline-block';
-
     renderWord(r.word, state.guessed, false);
     buildKeyboard();
   }
-
   renderLives();
   resetBridge();
 }
 
-/* ================= LIFELINES ================= */
-els.btn5050.addEventListener('click', () => {
-  if(state.solved || state.failed) return;
-  els.btn5050.disabled = true;
-  state.used5050 = true;
-  const r = currentRound();
-  let wrongIndexes = [0,1,2,3].filter(i => i !== r.correct);
-  wrongIndexes.sort(() => 0.5 - Math.random()); // Randomize
-  
-  // Tắt 2 đáp án sai
-  document.getElementById('opt' + wrongIndexes[0]).disabled = true;
-  document.getElementById('opt' + wrongIndexes[0]).classList.add('wrong');
-  document.getElementById('opt' + wrongIndexes[1]).disabled = true;
-  document.getElementById('opt' + wrongIndexes[1]).classList.add('wrong');
-  
-  document.getElementById('qCardBox').classList.add('bridge-stage','shake');
-  setTimeout(()=> document.getElementById('qCardBox').classList.remove('bridge-stage','shake'), 500);
-  showToast('⚖️ Removed 2 wrong answers! (-20 pts)');
-});
+/* ================= GAME LOGIC ================= */
+function lockRound(){
+  document.querySelectorAll('.key').forEach(k=>k.disabled = true);
+  document.querySelectorAll('.opt').forEach(o=>o.disabled = true);
+  if(!state.solved) els.nextPlayerBtn.style.display = 'inline-block';
+}
 
-els.btnReveal.addEventListener('click', () => {
-  if(state.solved || state.failed) return;
-  els.btnReveal.disabled = true;
-  state.usedReveal = true;
+function markCorrectOption(){
   const r = currentRound();
-  let unrevealed = [...neededLetters(r.word)].filter(ch => !state.guessed.has(ch));
-  if(unrevealed.length > 0) {
-    let randomChar = unrevealed[Math.floor(Math.random() * unrevealed.length)];
-    state.guessed.add(randomChar);
-    
-    let keyBtn = document.getElementById('key'+randomChar);
-    if(keyBtn) { keyBtn.disabled = true; keyBtn.classList.add('correct'); }
-    
-    renderWord(r.word, state.guessed, false, randomChar);
-    showToast(`🔤 Revealed letter: ${randomChar} (-10 pts)`);
-    checkWinCondition();
+  if(r.type === 'mc'){
+    const btns = document.querySelectorAll('.opt');
+    btns.forEach((b, idx)=>{ if(idx === r.correct) b.classList.add('correct'); });
   }
-});
+}
+
+// Logic cho Trắc nghiệm (MCQ)
+function selectOption(idx){
+  if(state.solved || state.failed) return;
+  const btn = document.getElementById('opt'+idx);
+  if(btn.disabled) return;
+  const r = currentRound();
+  
+  if(idx === r.correct){
+    state.solved = true;
+    els.nextPlayerBtn.style.display = 'none'; // Đã giải thì ẩn
+    markCorrectOption();
+    
+    // Tính điểm
+    let pts = 100;
+    if(r.n === 8) pts = 200;
+    if(r.n === 13) pts = 150;
+    
+    let pName = addScoreToPlayer(pts);
+    lockRound();
+    showToast(`🎉 CORRECT! +${pts} pts cho ${pName}!`);
+    burstConfetti();
+  } else {
+    btn.disabled = true;
+    btn.classList.add('wrong');
+    state.wrongOptions.add(idx);
+    state.qFails++;
+
+    // Sập cầu ngay lập tức
+    while(state.wrong < PLANK_COUNT){ fallPlank(state.wrong); state.wrong++; }
+    renderLives();
+    
+    state.failed = true;
+    lockRound();
+    
+    let pName = addScoreToPlayer(-30); 
+    showToast(`💥 SAI! ${pName} bị trừ 30 điểm.`);
+    
+    els.collapseOverlay.classList.add('show');
+    els.bridgeStage.classList.add('shake');
+    setTimeout(()=>els.bridgeStage.classList.remove('shake'), 600);
+
+    // Sai 3 lần thì hiện kết quả và chốt câu hỏi
+    if(state.qFails >= 3) {
+      markCorrectOption();
+      state.solved = true;
+      els.nextPlayerBtn.style.display = 'none';
+      showToast(`❌ 3 lần sai! Đáp án đúng đã hiển thị.`);
+    }
+  }
+}
+
+// Logic cho Ô chữ (Hangman)
+function guessLetter(L){
+  if(state.solved || state.failed) return;
+  const keyBtn = document.getElementById('key'+L);
+  if(!keyBtn || keyBtn.disabled) return;
+  keyBtn.disabled = true;
+  
+  const r = currentRound();
+  if(r.word.includes(L)){
+    state.guessed.add(L);
+    keyBtn.classList.add('correct');
+    renderWord(r.word, state.guessed, false);
+    document.querySelectorAll('.letter-box').forEach(b=>{ if(b.textContent===L) b.classList.add('pop'); });
+    
+    // Cộng 20 điểm trên mỗi chữ đoán đúng
+    let pName = addScoreToPlayer(20);
+    showToast(`✅ Chính xác! +20 pts cho ${pName}.`);
+    
+    // Check Win
+    const need = neededLetters(r.word);
+    const allFound = [...need].every(ch => state.guessed.has(ch));
+    if(allFound){
+      state.solved = true;
+      els.nextPlayerBtn.style.display = 'none';
+      lockRound();
+      showToast(`🎉 HOÀN THÀNH TỪ! Chúc mừng ${pName}!`);
+      burstConfetti();
+    }
+  } else {
+    keyBtn.classList.add('wrong');
+    fallPlank(state.wrong);
+    state.wrong++;
+    renderLives();
+    
+    // Sập cầu nếu sai 3 lần
+    if(state.wrong >= PLANK_COUNT){
+      state.failed = true;
+      lockRound();
+      let pName = addScoreToPlayer(-50);
+      showToast(`💥 SẬP CẦU! ${pName} bị trừ 50 điểm.`);
+      
+      els.collapseOverlay.classList.add('show');
+      els.bridgeStage.classList.add('shake');
+      setTimeout(()=>els.bridgeStage.classList.remove('shake'), 600);
+    }
+  }
+}
 
 /* ================= TOAST / PARTICLES ================= */
 let toastTimer;
@@ -648,135 +731,29 @@ function burstConfetti(){
   }
 }
 
-/* ================= GAME LOGIC ================= */
-function lockRound(){
-  document.querySelectorAll('.key').forEach(k=>k.disabled = true);
-  document.querySelectorAll('.opt').forEach(o=>o.disabled = true);
-  els.btn5050.disabled = true; els.btnReveal.disabled = true;
-}
-
-function markCorrectOption(){
-  const r = currentRound();
-  if(r.type === 'mc'){
-    const btns = document.querySelectorAll('.opt');
-    btns.forEach((b, idx)=>{ if(idx === r.correct) b.classList.add('correct'); });
-  }
-}
-
-function onWin(isDirectAnswer){
-  if(state.solved || state.failed) return;
-  state.solved = true;
-  
-  const r = currentRound();
-  if (r.type === 'fitb') renderWord(r.word, state.guessed, true);
-  if (r.type === 'mc') markCorrectOption();
-  
-  // Scoring Math
-  let points = 100;
-  if(state.used5050) points -= 20;
-  if(state.usedReveal) points -= 10;
-  points -= (state.manualGuesses * 5);
-  
-  let pName = addScoreToPlayer(points);
-  
-  lockRound();
-  showToast(`🎉 CORRECT! +${points} pts for ${pName}!`);
-  burstConfetti();
-}
-
-function onFail(){
-  if(state.solved || state.failed) return;
-  state.failed = true;
-  
-  const r = currentRound();
-  if (r.type === 'fitb') renderWord(r.word, state.guessed, true);
-  if (r.type === 'mc') markCorrectOption();
-  
-  lockRound();
-  
-  let pName = addScoreToPlayer(-10); // Phạt -10đ khi sập cầu
-
-  els.collapseOverlay.classList.add('show');
-  els.bridgeStage.classList.add('shake');
-  setTimeout(()=>els.bridgeStage.classList.remove('shake'), 600);
-  showToast(`💥 FAILED! ${pName} lost 10 points.`);
-}
-
-function checkWinCondition() {
-  const r = currentRound();
-  if(r.type === 'fitb') {
-    const need = neededLetters(r.word);
-    const allFound = [...need].every(ch => state.guessed.has(ch));
-    if(allFound) onWin(false);
-  }
-}
-
-// Logic cho ô chữ
-function guessLetter(L){
-  if(state.solved || state.failed) return;
-  const keyBtn = document.getElementById('key'+L);
-  if(!keyBtn || keyBtn.disabled) return;
-  keyBtn.disabled = true;
-  
-  // Track manual guesses (-5pt each)
-  state.manualGuesses++;
-  
-  const r = currentRound();
-  if(r.word.includes(L)){
-    state.guessed.add(L);
-    keyBtn.classList.add('correct');
-    renderWord(r.word, state.guessed, false);
-    document.querySelectorAll('.letter-box').forEach(b=>{ if(b.textContent===L) b.classList.add('pop'); });
-    checkWinCondition();
-  } else {
-    keyBtn.classList.add('wrong');
-    fallPlank(state.wrong);
-    state.wrong++;
-    renderLives();
-    if(state.wrong >= PLANK_COUNT){ onFail(); }
-  }
-}
-
-// Logic cho trắc nghiệm
-function selectOption(idx){
-  if(state.solved || state.failed) return;
-  const btn = document.getElementById('opt'+idx);
-  if(btn.disabled) return;
-  const r = currentRound();
-  
-  if(idx === r.correct){
-    onWin(true);
-  } else {
-    btn.disabled = true;
-    btn.classList.add('wrong');
-    // Drop all planks instantly for MC questions
-    while(state.wrong < PLANK_COUNT){
-      fallPlank(state.wrong);
-      state.wrong++;
-    }
-    renderLives();
-    onFail();
-  }
-}
-
 /* ================= CONTROLS ================= */
-document.getElementById('revealBtn').addEventListener('click', ()=>{
-  if(state.solved || state.failed) return;
-  state.failed = true; // Mark as failed internally so they don't score
-  const r = currentRound();
+els.nextPlayerBtn.addEventListener('click', ()=>{
+  if(state.solved) return;
   
-  if (r.type === 'fitb') {
-    renderWord(r.word, state.guessed, true);
-    showToast('👁 Correct Answer Revealed');
+  state.wrong = 0;
+  state.failed = false;
+  els.playerName.value = '';
+  els.nextPlayerBtn.style.display = 'none';
+  
+  resetBridge();
+  renderLives();
+  
+  const r = currentRound();
+  if (r.type === 'mc') {
+    document.querySelectorAll('.opt').forEach((o, idx) => {
+      if(!state.wrongOptions.has(idx)) o.disabled = false;
+    });
   } else {
-    markCorrectOption();
-    showToast('👁 Correct Answer: '+String.fromCharCode(65+r.correct));
+    document.querySelectorAll('.key').forEach(k => {
+      const char = k.textContent;
+      if(!state.guessed.has(char) && !k.classList.contains('wrong')) k.disabled = false;
+    });
   }
-  lockRound();
-});
-
-document.getElementById('resetRoundBtn').addEventListener('click', ()=>{
-  renderRound();
 });
 
 document.getElementById('nextBtn').addEventListener('click', ()=>{
@@ -786,34 +763,12 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
     return;
   }
   state.i++;
-  els.playerName.value = ''; // Clear for next student
+  els.playerName.value = ''; 
   renderRound();
 });
 
 document.getElementById('helpBtn').addEventListener('click', ()=>{
   document.getElementById('rulesBox').classList.toggle('open');
-});
-
-/* ================= BGM / NHẠC NỀN ================= */
-const bgMusic = document.getElementById('bgMusic');
-const musicToggleBtn = document.getElementById('musicToggleBtn');
-let isMusicPlaying = false;
-
-// Đặt âm lượng nhạc nền (từ 0.0 đến 1.0) - Đặt 0.4 để nhạc không lấn át tiếng nói
-bgMusic.volume = 0.4; 
-
-musicToggleBtn.addEventListener('click', () => {
-  if (isMusicPlaying) {
-    bgMusic.pause();
-    musicToggleBtn.textContent = '🎵 Bật nhạc';
-    isMusicPlaying = false;
-  } else {
-    bgMusic.play().catch(error => {
-      console.log("Trình duyệt chặn phát nhạc, cần người dùng click vào trang trước.");
-    });
-    musicToggleBtn.textContent = '🔇 Tắt nhạc';
-    isMusicPlaying = true;
-  }
 });
 
 /* ================= INIT ================= */
