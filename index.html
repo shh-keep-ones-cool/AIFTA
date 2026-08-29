@@ -93,8 +93,6 @@
   .plank.fallen{transform:translateY(160px) rotate(35deg);opacity:0;}
   .hanger.fallen{opacity:0;}
   .cable{fill:none;stroke:#7C5A3A;stroke-width:2.5;}
-  .boat{animation:bob 3.2s ease-in-out infinite;transform-origin:center;}
-  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
   .wave-line{fill:none;stroke:var(--jade);opacity:.22;stroke-width:2;}
   .collapse-overlay{opacity:0;transition:opacity .5s;pointer-events:none;}
   .collapse-overlay.show{opacity:1;pointer-events:auto;}
@@ -215,39 +213,72 @@
         <circle cx="460" cy="95" r="70" fill="url(#sunGlow)"/>
         <circle cx="460" cy="95" r="22" fill="#F2C14E" opacity=".85"/>
 
-        <!-- LEFT PIER -->
+<!-- LEFT PIER (ASEAN Style Temple) -->
         <g id="leftPier">
+          <!-- Trụ cầu -->
           <rect x="88" y="112" width="22" height="140" fill="#0B1E3D"/>
-          <polygon points="60,112 138,112 122,88 76,88" fill="#22B08A"/>
-          <polygon points="70,88 128,88 114,68 84,68" fill="#158465"/>
-          <polygon points="80,68 118,68 99,48" fill="#F2C14E"/>
-          <rect x="94" y="46" width="10" height="14" fill="#F2C14E"/>
+          
+          <!-- Bậc thềm nền móng -->
+          <path d="M64,112 L134,112 L124,106 L74,106 Z" fill="#158465"/>
+          
+          <!-- Tầng 1 -->
+          <rect x="76" y="86" width="46" height="20" fill="#22B08A"/>
+          <!-- Cổng vòm tầng 1 -->
+          <path d="M88,106 L88,94 A11,11 0 0,1 110,94 L110,106 Z" fill="#0B1E3D"/>
+          <path d="M88,106 L88,94 A11,11 0 0,1 110,94" fill="none" stroke="#F2C14E" stroke-width="1.5"/>
+          
+          <!-- Mái cong tầng 1 -->
+          <path d="M54,90 Q76,90 99,74 Q122,90 144,90 L126,72 L72,72 Z" fill="#158465"/>
+          <!-- Viền vàng mái tầng 1 -->
+          <path d="M54,90 Q76,90 99,74 Q122,90 144,90" fill="none" stroke="#F2C14E" stroke-width="2"/>
+          
+          <!-- Tầng 2 -->
+          <rect x="84" y="64" width="30" height="8" fill="#22B08A"/>
+          
+          <!-- Mái cong tầng 2 (vút nhọn lên) -->
+          <path d="M68,68 Q84,68 99,50 Q114,68 130,68 L99,44 Z" fill="#158465"/>
+          <!-- Viền vàng mái tầng 2 -->
+          <path d="M68,68 Q84,68 99,50 Q114,68 130,68" fill="none" stroke="#F2C14E" stroke-width="2"/>
+          
+          <!-- Đỉnh tháp (Spire/Finial) -->
+          <path d="M96,44 L102,44 L99,28 Z" fill="#F2C14E"/>
+          <circle cx="99" cy="26" r="3" fill="#F2C14E"/>
         </g>
 
-        <!-- RIGHT PIER -->
+<!-- RIGHT PIER (Indian Style Gateway) -->
         <g id="rightPier">
+          <!-- Trụ cầu -->
           <rect x="810" y="112" width="22" height="140" fill="#0B1E3D"/>
-          <path d="M778,112 C778,60 862,60 862,112 Z" fill="#FF9F45"/>
-          <path d="M792,112 C792,74 848,74 848,112 Z" fill="#E07A2C"/>
-          <circle cx="820" cy="58" r="7" fill="#F2C14E"/>
-        </g>
+          
+          <!-- Bậc thềm nền móng -->
+          <path d="M784,112 L858,112 L850,104 L792,104 Z" fill="#E07A2C"/>
+          
+          <!-- Thân tháp chính -->
+          <rect x="798" y="74" width="46" height="30" fill="#FF9F45"/>
+          <!-- Cổng vòm lớn ở giữa -->
+          <path d="M813,104 L813,88 A8,8 0 0,1 829,88 L829,104 Z" fill="#0B1E3D"/>
+          <path d="M813,104 L813,88 A8,8 0 0,1 829,88" fill="none" stroke="#F2C14E" stroke-width="1.5"/>
 
+          <!-- Mái vòm phụ 2 bên -->
+          <path d="M784,104 C784,90 796,90 796,104 Z" fill="#E07A2C"/>
+          <path d="M846,104 C846,90 858,90 858,104 Z" fill="#E07A2C"/>
+
+          <!-- Mái vòm củ hành chính (Onion Dome) -->
+          <path d="M794,74 C794,52 810,44 821,34 C832,44 848,52 848,74 Z" fill="#E07A2C"/>
+          <!-- Viền điểm nhấn mái vòm -->
+          <path d="M794,74 C794,52 810,44 821,34 C832,44 848,52 848,74" fill="none" stroke="#F2C14E" stroke-width="2"/>
+
+          <!-- Chóp đỉnh tháp (Kalash & Finial) -->
+          <rect x="819" y="28" width="4" height="6" fill="#F2C14E"/>
+          <circle cx="821" cy="24" r="4" fill="#F2C14E"/>
+        </g>
+        
         <!-- CABLES -->
         <path class="cable" d="M100,112 C300,168 620,168 820,112"/>
         <path class="cable" d="M100,120 C300,178 620,178 820,120" opacity=".6"/>
 
         <g id="hangersGroup"></g>
         <g id="planksGroup"></g>
-
-        <!-- BOAT -->
-        <g class="boat" transform="translate(360,238)">
-          <path d="M0,20 L130,20 L112,42 L18,42 Z" fill="#7C5A3A"/>
-          <rect x="55" y="-28" width="4" height="48" fill="#3E2A1A"/>
-          <path d="M59,-28 L100,-6 L59,6 Z" fill="#F5F3EC" opacity=".85"/>
-          <rect x="20" y="6" width="16" height="12" rx="2" fill="#FF9F45"/>
-          <rect x="42" y="6" width="16" height="12" rx="2" fill="#22B08A"/>
-          <rect x="64" y="6" width="16" height="12" rx="2" fill="#F2C14E"/>
-        </g>
 
         <!-- SEA -->
         <rect x="0" y="252" width="920" height="88" fill="url(#sea)"/>
