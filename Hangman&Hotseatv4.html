@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIFTA Bridge · Hot Seat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A1B36;
+    --bg-2:#0E2246;
+    --panel:#122A50;
+    --panel-soft:#0F2340;
+    --line: rgba(245,243,236,.12);
+    --line-strong: rgba(245,243,236,.22);
+    --ink:#F5F3EC;
+    --ink-dim:#A9B7D6;
+    --ink-faint:#6E7DA0;
+    --saffron:#FF9F45;
+    --saffron-deep:#E07A2C;
+    --jade:#22B08A;
+    --jade-deep:#158465;
+    --gold:#F2C14E;
+    --coral:#FF6B6B;
+    --purple: #9b5DE5;
+    --shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(255,159,69,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34,176,138,.12), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Sora',sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  .topbar{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:18px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+  .title{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(28px,4.4vw,46px);line-height:1.02;margin:0;letter-spacing:-.01em;}
+  .title em{font-style:italic;font-weight:500;color:var(--saffron);}
+  .title small{display:block;font-family:'Sora',sans-serif;font-weight:600;font-size:14px;color:var(--ink-dim);letter-spacing:.02em;margin-top:6px;}
+  .progress-box{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .progress-box .lbl{font-size:10.5px;letter-spacing:.14em;color:var(--ink-faint);text-transform:uppercase;}
+  .progress-box .num{font-size:26px;font-weight:700;color:var(--ink);}
+  .progress-box .num span{color:var(--ink-faint);font-size:16px;}
+  .help-btn{border:1px solid var(--line-strong);background:var(--panel-soft);color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:12px;border-radius:999px;padding:8px 14px;cursor:pointer;margin-top:8px;}
+  .help-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+  .rules{max-width:1180px;margin:0 auto 18px;background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;font-size:13.5px;line-height:1.65;color:var(--ink-dim);display:none;}
+  .rules.open{display:block;}
+  .rules b{color:var(--ink);}
+
+  /* ---------- Main grid ---------- */
+  .stage{display:grid;grid-template-columns:260px 1fr 240px;gap:16px;align-items:stretch;margin-bottom:18px;}
+  @media (max-width:980px){.stage{grid-template-columns:1fr;}}
+
+  /* HOT SEAT CARD */
+  .hot-seat-card{background:var(--panel);border:2px solid var(--saffron);border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;position:relative;box-shadow:0 0 30px rgba(255,159,69,.15);}
+  .hot-seat-title{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--saffron);letter-spacing:.1em;text-transform:uppercase;}
+  .avatar-icon{font-size:42px;animation:float 3s ease-in-out infinite;}
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .player-input{background:rgba(0,0,0,0.2);border:1px dashed var(--saffron);border-radius:8px;color:var(--ink);font-family:'Sora',sans-serif;font-weight:700;font-size:16px;text-align:center;width:100%;padding:10px;outline:none;transition:0.3s;}
+  .player-input:focus{border-style:solid;background:var(--panel-soft);box-shadow: 0 0 10px rgba(255,159,69,0.3);}
+  .lifeline-box{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:auto;}
+  .lifeline-btn{background:var(--panel-soft);border:1px solid var(--line-strong);color:var(--ink);padding:10px;border-radius:8px;font-family:'Sora',sans-serif;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:0.2s;}
+  .lifeline-btn:hover:not(:disabled){background:var(--saffron);color:#000;border-color:var(--saffron);}
+  .lifeline-btn:disabled{display:none;} /* Ẩn luôn nút không dùng cho chế độ đó */
+
+  /* LEADERBOARD CARD */
+  .leaderboard-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;}
+  .leaderboard-title{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:10px;}
+  .lb-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:220px;}
+  .lb-item{display:flex;justify-content:space-between;align-items:center;background:var(--panel-soft);padding:8px 12px;border-radius:6px;font-size:13px;border-left:3px solid var(--gold);}
+  .lb-name{font-weight:600;color:var(--ink);}
+  .lb-score{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;}
+  .lb-empty{text-align:center;font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:20px;}
+
+  /* BRIDGE STAGE */
+  .bridge-stage{background:linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;box-shadow:var(--shadow);}
+  .bridge-stage svg{display:block;width:100%;height:auto;}
+  .lives-row{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);letter-spacing:.08em;}
+  .plank-life{width:24px;height:8px;border-radius:2px;background:var(--jade);transition:.3s;}
+  .plank-life.lost{background:var(--coral);opacity:.28;}
+
+  .plank{fill:#C98A44;transition:transform .55s cubic-bezier(.6,-0.2,.8,.4), opacity .5s;transform-origin:center;}
+  .hanger{stroke:var(--gold);stroke-width:1.4;opacity:.55;transition:opacity .4s .1s;}
+  .plank.fallen{transform:translateY(160px) rotate(35deg);opacity:0;}
+  .hanger.fallen{opacity:0;}
+  .cable{fill:none;stroke:#7C5A3A;stroke-width:2.5;}
+  .boat{animation:bob 3.2s ease-in-out infinite;transform-origin:center;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+  .wave-line{fill:none;stroke:var(--jade);opacity:.22;stroke-width:2;}
+  .collapse-overlay{opacity:0;transition:opacity .5s;pointer-events:none;}
+  .collapse-overlay.show{opacity:1;pointer-events:auto;}
+  .bridge-stage.shake{animation:shake .55s;}
+  @keyframes shake{10%,90%{transform:translateX(-1px);}20%,80%{transform:translateX(2px);}30%,50%,70%{transform:translateX(-4px);}40%,60%{transform:translateX(4px);}}
+
+  /* ---------- Question card ---------- */
+  .qcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px clamp(16px,3vw,30px);margin-bottom:16px;position:relative; text-align: center;}
+  .qtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .cat-tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:5px 11px;border-radius:999px;}
+  .cat-tag.main{background:rgba(34,176,138,.16);color:var(--jade);border:1px solid rgba(34,176,138,.35);}
+  
+  .qtext{font-family:'Fraunces',serif;font-size:clamp(18px,2.4vw,23px);font-weight:600;line-height:1.35;margin:0 0 18px; text-align: left;}
+  .qmedia-box { margin-bottom: 20px; display: none; }
+  .qmedia-box img { max-width: 100%; max-height: 280px; border-radius: 12px; border: 2px solid var(--line-strong); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:640px){.options{grid-template-columns:1fr;}}
+  .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--panel-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink-dim);font-family:'Sora',sans-serif;font-size:14px;cursor:pointer;transition:.2s;}
+  .opt:hover:not(:disabled){border-color:var(--gold);color:var(--ink);transform:translateY(-1px);box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+  .opt .k{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold);flex-shrink:0;}
+  .opt.correct{background:rgba(34,176,138,.16);border-color:var(--jade);color:var(--ink);}
+  .opt.wrong{background:rgba(255,107,107,.12);border-color:var(--coral);color:var(--ink-faint);text-decoration:line-through;opacity:0.5;}
+  .opt:disabled{cursor:default;}
+
+  /* ---------- Word blanks ---------- */
+  .word-zone{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;padding:20px 10px 6px;}
+  .word-group{display:flex;gap:6px;margin-bottom:14px;}
+  .letter-box{width:28px;height:38px;border-bottom:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;color:var(--ink);transition: 0.3s;}
+  .letter-box.symbol{border-bottom:none; color: var(--ink-faint);}
+  .letter-box.pop{animation:pop .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+  .letter-box.hint-reveal{color: var(--saffron); border-color: var(--saffron); text-shadow: 0 0 10px var(--saffron);}
+  @keyframes pop{0%{transform:scale(.4);opacity:0;}70%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+
+  /* ---------- Keyboard ---------- */
+  .keyboard{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;max-width:780px;margin:10px auto 0;padding:0 10px;}
+  @media (max-width:640px){.keyboard{grid-template-columns:repeat(9,1fr);}}
+  .key{aspect-ratio:1/1;border-radius:8px;border:1px solid var(--line-strong);background:var(--panel-soft);color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;}
+  .key:hover:not(:disabled){border-color:var(--gold);color:var(--gold);transform:scale(1.1);}
+  .key.correct{background:var(--jade-deep);border-color:var(--jade);color:#fff;}
+  .key.wrong{background:transparent;border-color:transparent;color:var(--ink-faint);opacity:.3;}
+  .key:disabled{cursor:default;}
+
+  /* ---------- Controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px;}
+  .btn{font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:11px;border:1px solid var(--line-strong);background:var(--panel-soft);color:var(--ink);cursor:pointer;transition:.2s;letter-spacing:.01em;}
+  .btn:hover{transform:translateY(-1px);border-color:var(--gold);}
+  .btn.primary{background:linear-gradient(135deg,var(--saffron),var(--saffron-deep));border:none;color:#241300;box-shadow:0 10px 24px rgba(255,159,69,.25);}
+  .btn.ghost{background:transparent;color:var(--ink-faint);}
+  
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#241500;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px;box-shadow:0 14px 34px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.35s;z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .confetti{position:fixed;width:10px;height:10px;z-index:90;animation:fall 3s linear forwards;}
+  @keyframes fall{
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1;}
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0;}
+  }
+
+  footer{text-align:center;color:var(--ink-faint);font-size:12px;margin-top:36px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Interactive Classroom · ASEAN - India</div>
+      <h1 class="title">The <em>AIFTA</em> Bridge<small>Mode: Hot Seat & Leaderboard</small></h1>
+    </div>
+    <div>
+      <div class="progress-box">
+        <div class="lbl">Question</div>
+        <div class="num" id="qNum">1<span id="qTotal">/15</span></div>
+      </div>
+      <!-- Nút bật tắt nhạc -->
+      <button class="help-btn" id="musicToggleBtn">🎵 Bật nhạc</button>
+      <button class="help-btn" id="helpBtn">? Rules</button>
+
+      <!-- Thẻ chứa nhạc ẩn (Thuộc tính loop giúp nhạc phát lại liên tục) -->
+      <audio id="bgMusic" loop>
+        <source src="audio game.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+
+  <div class="rules" id="rulesBox">
+    <b>Rules - Hot Seat Edition:</b> <br>
+    - Base score per correct answer is <b>100 pts</b>.<br>
+    - <b>Multiple Choice (A,B,C,D):</b> You can use <b>50:50</b> (-20 pts). If you pick the wrong option, the bridge collapses instantly (Fail) and you lose 10 pts.<br>
+    - <b>Fill in the Blanks:</b> You can use <b>Reveal Letter</b> (-10 pts). Manually guessing a letter costs <b>-5 pts</b>. You have 3 lives (3 wrong letter guesses) before the bridge collapses.<br>
+    - Once the bridge collapses, your turn is over!
+  </div>
+
+  <div class="stage">
+    <div class="hot-seat-card">
+      <div class="hot-seat-title">🔥 HOT SEAT</div>
+      <div class="avatar-icon">🙋‍♂️</div>
+      <input type="text" class="player-input" id="playerName" placeholder="Enter student name..." value="">
+      
+      <div class="lifeline-box">
+        <button class="lifeline-btn" id="btn5050">⚖️ 50:50 (-20pt)</button>
+        <button class="lifeline-btn" id="btnReveal">🔤 Reveal Letter (-10pt)</button>
+      </div>
+    </div>
+
+    <div class="bridge-stage" id="bridgeStage">
+      <svg id="bridgeSvg" viewBox="0 0 920 340" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#16305C"/>
+            <stop offset="100%" stop-color="#0E2246"/>
+          </linearGradient>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0E3A56"/>
+            <stop offset="100%" stop-color="#082337"/>
+          </linearGradient>
+          <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#F2C14E" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#F2C14E" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <rect width="920" height="340" fill="url(#sky)"/>
+        <circle cx="460" cy="95" r="70" fill="url(#sunGlow)"/>
+        <circle cx="460" cy="95" r="22" fill="#F2C14E" opacity=".85"/>
+
+        <g id="leftPier">
+          <rect x="88" y="112" width="22" height="140" fill="#0B1E3D"/>
+          <polygon points="60,112 138,112 122,88 76,88" fill="#22B08A"/>
+          <polygon points="70,88 128,88 114,68 84,68" fill="#158465"/>
+          <polygon points="80,68 118,68 99,48" fill="#F2C14E"/>
+          <rect x="94" y="46" width="10" height="14" fill="#F2C14E"/>
+        </g>
+
+        <g id="rightPier">
+          <rect x="810" y="112" width="22" height="140" fill="#0B1E3D"/>
+          <path d="M778,112 C778,60 862,60 862,112 Z" fill="#FF9F45"/>
+          <path d="M792,112 C792,74 848,74 848,112 Z" fill="#E07A2C"/>
+          <circle cx="820" cy="58" r="7" fill="#F2C14E"/>
+        </g>
+
+        <path class="cable" d="M100,112 C300,168 620,168 820,112"/>
+        <path class="cable" d="M100,120 C300,178 620,178 820,120" opacity=".6"/>
+
+        <g id="hangersGroup"></g>
+        <g id="planksGroup"></g>
+
+        <g class="boat" transform="translate(360,238)">
+          <path d="M0,20 L130,20 L112,42 L18,42 Z" fill="#7C5A3A"/>
+          <rect x="55" y="-28" width="4" height="48" fill="#3E2A1A"/>
+          <path d="M59,-28 L100,-6 L59,6 Z" fill="#F5F3EC" opacity=".85"/>
+          <rect x="20" y="6" width="16" height="12" rx="2" fill="#FF9F45"/>
+          <rect x="42" y="6" width="16" height="12" rx="2" fill="#22B08A"/>
+          <rect x="64" y="6" width="16" height="12" rx="2" fill="#F2C14E"/>
+        </g>
+
+        <rect x="0" y="252" width="920" height="88" fill="url(#sea)"/>
+        <path class="wave-line" d="M0,266 Q40,256 80,266 T160,266 T240,266 T320,266 T400,266 T480,266 T560,266 T640,266 T720,266 T800,266 T880,266 T960,266"/>
+        <path class="wave-line" d="M0,290 Q40,280 80,290 T160,290 T240,290 T320,290 T400,290 T480,290 T560,290 T640,290 T720,290 T800,290 T880,290 T960,290" opacity=".14"/>
+
+        <g class="collapse-overlay" id="collapseOverlay">
+          <rect x="0" y="0" width="920" height="340" fill="#08132A" opacity=".75"/>
+          <text x="460" y="178" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="28" fill="#FF6B6B">BRIDGE COLLAPSED!</text>
+          <text x="460" y="210" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F5F3EC">You lost your turn and 10 points.</text>
+        </g>
+      </svg>
+      <div class="lives-row" id="livesRow"></div>
+    </div>
+
+    <div class="leaderboard-card">
+      <div class="leaderboard-title">🏆 LEADERBOARD</div>
+      <div class="lb-empty" id="lbEmpty">No scores yet.<br>Be the first!</div>
+      <ul class="lb-list" id="lbList"></ul>
+    </div>
+  </div>
+
+  <div class="qcard" id="qCardBox">
+    <div class="qtop">
+      <span class="cat-tag main" id="catTag">QUESTION</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);" id="livesCounter">Lives left: <b id="wrongLeft" style="color:var(--jade);">3</b>/3</span>
+    </div>
+    
+    <p class="qtext" id="qText">Loading question...</p>
+    
+    <div class="qmedia-box" id="qMediaBox">
+      <img id="qMediaImg" src="" alt="Question Image">
+    </div>
+
+    <div class="options" id="optionsBox"></div>
+  </div>
+
+  <div class="word-zone" id="wordZone"></div>
+  <div class="keyboard" id="keyboard"></div>
+
+  <div class="controls">
+    <button class="btn ghost" id="revealBtn">👁 Show Answer</button>
+    <button class="btn" id="resetRoundBtn">↺ Replay Round</button>
+    <button class="btn primary" id="nextBtn">Next Question →</button>
+  </div>
+
+  <footer>AIFTA CLASSROOM GAME · Hybrid Mode (MCQ & Hangman)</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATA ================= */
+// Các thuộc tính mới: 
+// - type: 'mc' (Trắc nghiệm có ABCD) hoặc 'fitb' (Đoán ô chữ)
+// - img: Chèn link ảnh (Nếu có)
+const rounds = [
+  {n:1, type:'mc', q:"What does AIFTA stand for?",
+   options:["ASEAN - India Free Trade Agreement","ASEAN - International Free Trade Agreement","Asia - India Free Trade Agreement","ASEAN - Indian Financial Trade Agreement"],
+   correct:0},
+  
+  {n:2, type:'fitb', q:"When did the ASEAN - India Trade in Goods Agreement enter into force?",
+   word:"01/01/2010"},
+  
+  {n:3, type:'mc', q:"Which of the following is NOT a typical characteristic of an FTA?",
+   options:["Tariff reduction","Preferential market access","Common external tariff","Rules of Origin"],
+   correct:2},
+  
+  {n:4, type:'mc', q:"When someone in India gently tilts their head from side to side in a fast side-to-side motion, what does it most likely signify?",
+   img:"3.gif",
+   options:["Yes, maybe, I agree, or I am listening.","An express refusal and complete disagreement.","A request to turn down the ambient music volume.","An uncomfortable muscle spasm in the neck."],
+   correct:0},
+  
+  {n:5, type:'fitb', q:"A Vietnamese software developer provides services online to an Indian customer without travelling to India or opening an office there. Which Mode of Supply is this?",
+   word:"MODE 1"},
+  
+  {n:6, type:'fitb', q:"How many ASEAN Member States were parties to the original ASEAN-India Trade in Goods Agreement?",
+   word:"10"},
+  
+  {n:7, type:'fitb', q:"Who is the current President of India?",
+   word:"DROUPADI MURMU"},
+  
+  {n:8, type:'mc', q:"Under the general Rule of Origin (ROO) for AIFTA, a good is considered originating if its Regional Value Content (RVC) is at least what percentage?",
+   options:["40%","50%","35%","25%"],
+   correct:2},
+  
+  {n:9, type:'mc', q:"Which category of agricultural products was subject to intense negotiation due to sensitivities in India, resulting in a special tariff reduction list rather than complete elimination?",
+   options:["Palm oil, tea, coffee, and pepper","Cotton, sugarcane, jute, and tobacco","Wheat, rice, corn, and soybeans","Dairy, poultry, beef, and pork"],
+   correct:0},
+  
+  {n:10, type:'fitb', q:"Complete the blank: In addition to the Trade in Goods Agreement, ASEAN and India signed two additional agreements in 2014 to cover ____ and ____, creating a full FTA framework.",
+   word:"SERVICES AND INVESTMENT"},
+  
+  {n:11, type:'mc', q:"Which Indian TV series became extremely popular in Vietnam and tells the story of a young girl named Anandi who was married at the age of eight?",
+   img:"11.png",
+   options:["Jodha Akbar","The Wrestling Competition","The Child Bride","3 Idiots"],
+   correct:2},
+  
+  {n:12, type:'mc', q:"A Vietnamese pepper exporter ships cargo to India under AIFTA benefits. On the way, the ship docks at Colombo, Sri Lanka, for crew rest, where the exporter splits the cargo and sells half to a local merchant. How will Indian Customs likely react upon arrival?",
+   options:["Accept the remaining half without asking questions.","Deny AIFTA preferential tariffs for the whole or remaining shipment.","Grant double tax discounts for creative distribution.","Charge duty only on the portion sold in Sri Lanka."],
+   correct:1},
+  
+  {n:13, type:'mc', q:"Why did Indian negotiators fight so fiercely over palm oil imports from Malaysia and Indonesia during AIFTA negotiations?",
+   options:["Because palm oil was deemed too high in calories.","To encourage everyone to use olive oil instead.","To protect domestic oilseed farmers and refining industries.","Because ASEAN refused to supply coconut oil."],
+   correct:2}, // Fixed based on factual accuracy (Protecting domestic farmers)
+  
+  {n:14, type:'mc', q:"A canned tuna shipment from Vietnam to India uses tuna caught by a Panama-flagged vessel in international waters. Does it qualify for AIFTA origin under Wholly Obtained (WO)?",
+   options:["Yes, as long as the tin can is manufactured in Vietnam.","No, unless Panama signs an agreement with AIFTA.","No, because the vessel does not fly an AIFTA member flag.","Yes, because tuna swims freely in international waters."],
+   correct:2},
+  
+  {n:15, type:'mc', q:"I am NOT a main dish, but I can completely change your curry experience. 👀\nI am traditionally cooked in a clay oven called a tandoor, and you can find me plain, buttered, or stuffed with different fillings. Who am I?",
+   img:"15.gif",
+   options:["Naan","Samosa","Biryani","Dosa"],
+   correct:0}
+];
+
+/* ================= STATE ================= */
+const state = {
+  i: 0, wrong: 0, guessed: new Set(),
+  solved: false, failed: false,
+  leaderboard: {}, // { "Player Name": points }
+  used5050: false, usedReveal: false,
+  manualGuesses: 0
+};
+
+const els = {
+  qNum: document.getElementById('qNum'),
+  catTag: document.getElementById('catTag'),
+  qText: document.getElementById('qText'),
+  qMediaBox: document.getElementById('qMediaBox'),
+  qMediaImg: document.getElementById('qMediaImg'),
+  optionsBox: document.getElementById('optionsBox'),
+  wordZone: document.getElementById('wordZone'),
+  keyboard: document.getElementById('keyboard'),
+  livesCounter: document.getElementById('livesCounter'),
+  wrongLeft: document.getElementById('wrongLeft'),
+  livesRow: document.getElementById('livesRow'),
+  planksGroup: document.getElementById('planksGroup'),
+  hangersGroup: document.getElementById('hangersGroup'),
+  bridgeStage: document.getElementById('bridgeStage'),
+  collapseOverlay: document.getElementById('collapseOverlay'),
+  toast: document.getElementById('toast'),
+  playerName: document.getElementById('playerName'),
+  lbList: document.getElementById('lbList'),
+  lbEmpty: document.getElementById('lbEmpty'),
+  // Lifelines
+  btn5050: document.getElementById('btn5050'),
+  btnReveal: document.getElementById('btnReveal')
+};
+
+/* ================= BUILD BRIDGE (3 Planks) ================= */
+const PLANK_COUNT = 3, PLANK_W = 190, PLANK_GAP = 20, START_X = 152, DECK_Y = 190;
+function cableYAt(x){
+  const t = (x-100)/(820-100);
+  return 112 + 56*4*t*(1-t);
+}
+function drawBridge() {
+  els.planksGroup.innerHTML = '';
+  els.hangersGroup.innerHTML = '';
+  for(let idx=0; idx<PLANK_COUNT; idx++){
+    const x = START_X + idx*(PLANK_W+PLANK_GAP);
+    const plank = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    plank.setAttribute('x', x); plank.setAttribute('y', DECK_Y);
+    plank.setAttribute('width', PLANK_W); plank.setAttribute('height', 14);
+    plank.setAttribute('rx', 3); plank.classList.add('plank'); plank.id = 'plank'+idx;
+    els.planksGroup.appendChild(plank);
+
+    [x+12, x+PLANK_W-12].forEach((hx,hi)=>{
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', hx); line.setAttribute('y1', cableYAt(hx));
+      line.setAttribute('x2', hx); line.setAttribute('y2', DECK_Y);
+      line.classList.add('hanger'); line.id = 'hanger'+idx+'_'+hi;
+      els.hangersGroup.appendChild(line);
+    });
+  }
+}
+drawBridge();
+
+function resetBridge(){
+  for(let idx=0; idx<PLANK_COUNT; idx++){
+    document.getElementById('plank'+idx).classList.remove('fallen');
+    document.getElementById('hanger'+idx+'_0').classList.remove('fallen');
+    document.getElementById('hanger'+idx+'_1').classList.remove('fallen');
+  }
+  els.collapseOverlay.classList.remove('show');
+}
+function fallPlank(idx){
+  const p = document.getElementById('plank'+idx);
+  if(p) p.classList.add('fallen');
+  const h0 = document.getElementById('hanger'+idx+'_0'), h1 = document.getElementById('hanger'+idx+'_1');
+  if(h0) h0.classList.add('fallen');
+  if(h1) h1.classList.add('fallen');
+}
+function renderLives(){
+  els.livesRow.innerHTML = '';
+  for(let idx=0; idx<PLANK_COUNT; idx++){
+    const d = document.createElement('div');
+    d.className = 'plank-life' + (idx < state.wrong ? ' lost' : '');
+    els.livesRow.appendChild(d);
+  }
+  let remain = PLANK_COUNT - state.wrong;
+  els.wrongLeft.textContent = remain;
+  els.wrongLeft.style.color = remain > 1 ? 'var(--jade)' : 'var(--coral)';
+}
+
+/* ================= LEADERBOARD ================= */
+function updateLeaderboard() {
+  els.lbList.innerHTML = '';
+  const entries = Object.entries(state.leaderboard).sort((a,b) => b[1] - a[1]);
+  if(entries.length === 0) {
+    els.lbEmpty.style.display = 'block';
+  } else {
+    els.lbEmpty.style.display = 'none';
+    entries.forEach(([name, score]) => {
+      const li = document.createElement('li');
+      li.className = 'lb-item';
+      li.innerHTML = `<span class="lb-name">${name}</span><span class="lb-score">${score} pt</span>`;
+      els.lbList.appendChild(li);
+    });
+  }
+}
+function addScoreToPlayer(points) {
+  let pName = els.playerName.value.trim();
+  if(!pName) pName = "Anonymous Player";
+  if(!state.leaderboard[pName]) state.leaderboard[pName] = 0;
+  state.leaderboard[pName] += points;
+  updateLeaderboard();
+  return pName;
+}
+
+/* ================= WORD HELPERS (With Numbers & Symbols) ================= */
+// Tính ký tự cần điền (A-Z và 0-9)
+function neededLetters(word){
+  return new Set(word.replace(/[^A-Z0-9]/g,'').split(''));
+}
+function renderWord(word, guessedSet, forceReveal, highlightChar = null){
+  els.wordZone.innerHTML = '';
+  word.split(' ').forEach(w=>{
+    const grp = document.createElement('div');
+    grp.className = 'word-group';
+    [...w].forEach(ch=>{
+      const box = document.createElement('div');
+      
+      // Tự động hiển thị các ký tự không phải chữ/số (dấu cách, gạch chéo, v.v.)
+      if (!/[A-Z0-9]/.test(ch)) {
+        box.className = 'letter-box symbol';
+        box.textContent = ch;
+      } else {
+        box.className = 'letter-box';
+        if(forceReveal || guessedSet.has(ch)){
+          box.textContent = ch;
+          if(ch === highlightChar) box.classList.add('hint-reveal', 'pop');
+        } else {
+          box.textContent = '';
+        }
+      }
+      grp.appendChild(box);
+    });
+    els.wordZone.appendChild(grp);
+  });
+}
+
+/* ================= KEYBOARD (A-Z and 0-9) ================= */
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+function buildKeyboard(){
+  els.keyboard.innerHTML = '';
+  [...CHARS].forEach(L=>{
+    const b = document.createElement('button');
+    b.className = 'key'; b.textContent = L; b.id = 'key'+L;
+    b.addEventListener('click', ()=>guessLetter(L));
+    els.keyboard.appendChild(b);
+  });
+}
+
+/* ================= RENDER ROUND ================= */
+function currentRound(){ return rounds[state.i]; }
+
+function renderRound(){
+  // Reset states
+  state.wrong = 0; state.guessed = new Set(); 
+  state.solved = false; state.failed = false;
+  state.used5050 = false; state.usedReveal = false;
+  state.manualGuesses = 0;
+
+  const r = currentRound();
+  els.qNum.innerHTML = (state.i+1) + '<span>/'+rounds.length+'</span>';
+  els.qText.innerText = 'Q' + r.n + '. ' + r.q; // innerText để hiển thị xuống dòng
+
+  // Xử lý hình ảnh (Nếu có)
+  if(r.img) {
+    els.qMediaImg.src = r.img;
+    els.qMediaBox.style.display = 'block';
+  } else {
+    els.qMediaBox.style.display = 'none';
+  }
+
+  // Toggle UI dựa trên chế độ câu hỏi
+  els.btn5050.disabled = false;
+  els.btnReveal.disabled = false;
+
+  if (r.type === 'mc') {
+    // Mode Trắc Nghiệm (A,B,C,D)
+    els.wordZone.style.display = 'none';
+    els.keyboard.style.display = 'none';
+    els.optionsBox.style.display = 'grid';
+    els.btn5050.style.display = 'flex';
+    els.btnReveal.style.display = 'none';
+    els.livesCounter.style.display = 'none'; // MC chỉ cần 1 phát là sập cầu
+
+    els.optionsBox.innerHTML = '';
+    r.options.forEach((opt, idx)=>{
+      const b = document.createElement('button');
+      b.className = 'opt'; b.id = 'opt' + idx;
+      b.innerHTML = '<span class="k">'+String.fromCharCode(65+idx)+'.</span><span>'+opt+'</span>';
+      b.addEventListener('click', ()=>selectOption(idx));
+      els.optionsBox.appendChild(b);
+    });
+
+  } else {
+    // Mode Điền Từ (Hangman)
+    els.wordZone.style.display = 'flex';
+    els.keyboard.style.display = 'grid';
+    els.optionsBox.style.display = 'none';
+    els.btn5050.style.display = 'none';
+    els.btnReveal.style.display = 'flex';
+    els.livesCounter.style.display = 'inline-block';
+
+    renderWord(r.word, state.guessed, false);
+    buildKeyboard();
+  }
+
+  renderLives();
+  resetBridge();
+}
+
+/* ================= LIFELINES ================= */
+els.btn5050.addEventListener('click', () => {
+  if(state.solved || state.failed) return;
+  els.btn5050.disabled = true;
+  state.used5050 = true;
+  const r = currentRound();
+  let wrongIndexes = [0,1,2,3].filter(i => i !== r.correct);
+  wrongIndexes.sort(() => 0.5 - Math.random()); // Randomize
+  
+  // Tắt 2 đáp án sai
+  document.getElementById('opt' + wrongIndexes[0]).disabled = true;
+  document.getElementById('opt' + wrongIndexes[0]).classList.add('wrong');
+  document.getElementById('opt' + wrongIndexes[1]).disabled = true;
+  document.getElementById('opt' + wrongIndexes[1]).classList.add('wrong');
+  
+  document.getElementById('qCardBox').classList.add('bridge-stage','shake');
+  setTimeout(()=> document.getElementById('qCardBox').classList.remove('bridge-stage','shake'), 500);
+  showToast('⚖️ Removed 2 wrong answers! (-20 pts)');
+});
+
+els.btnReveal.addEventListener('click', () => {
+  if(state.solved || state.failed) return;
+  els.btnReveal.disabled = true;
+  state.usedReveal = true;
+  const r = currentRound();
+  let unrevealed = [...neededLetters(r.word)].filter(ch => !state.guessed.has(ch));
+  if(unrevealed.length > 0) {
+    let randomChar = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+    state.guessed.add(randomChar);
+    
+    let keyBtn = document.getElementById('key'+randomChar);
+    if(keyBtn) { keyBtn.disabled = true; keyBtn.classList.add('correct'); }
+    
+    renderWord(r.word, state.guessed, false, randomChar);
+    showToast(`🔤 Revealed letter: ${randomChar} (-10 pts)`);
+    checkWinCondition();
+  }
+});
+
+/* ================= TOAST / PARTICLES ================= */
+let toastTimer;
+function showToast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>els.toast.classList.remove('show'), 3000);
+}
+function burstConfetti(){
+  const colors = ['#FF9F45', '#F2C14E', '#22B08A', '#9b5DE5', '#FF6B6B'];
+  for(let k=0;k<60;k++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = (Math.random()*100)+'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (2 + Math.random()*2)+'s';
+    if (k % 3 === 0) c.style.borderRadius = "50%";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 4000);
+  }
+}
+
+/* ================= GAME LOGIC ================= */
+function lockRound(){
+  document.querySelectorAll('.key').forEach(k=>k.disabled = true);
+  document.querySelectorAll('.opt').forEach(o=>o.disabled = true);
+  els.btn5050.disabled = true; els.btnReveal.disabled = true;
+}
+
+function markCorrectOption(){
+  const r = currentRound();
+  if(r.type === 'mc'){
+    const btns = document.querySelectorAll('.opt');
+    btns.forEach((b, idx)=>{ if(idx === r.correct) b.classList.add('correct'); });
+  }
+}
+
+function onWin(isDirectAnswer){
+  if(state.solved || state.failed) return;
+  state.solved = true;
+  
+  const r = currentRound();
+  if (r.type === 'fitb') renderWord(r.word, state.guessed, true);
+  if (r.type === 'mc') markCorrectOption();
+  
+  // Scoring Math
+  let points = 100;
+  if(state.used5050) points -= 20;
+  if(state.usedReveal) points -= 10;
+  points -= (state.manualGuesses * 5);
+  
+  let pName = addScoreToPlayer(points);
+  
+  lockRound();
+  showToast(`🎉 CORRECT! +${points} pts for ${pName}!`);
+  burstConfetti();
+}
+
+function onFail(){
+  if(state.solved || state.failed) return;
+  state.failed = true;
+  
+  const r = currentRound();
+  if (r.type === 'fitb') renderWord(r.word, state.guessed, true);
+  if (r.type === 'mc') markCorrectOption();
+  
+  lockRound();
+  
+  let pName = addScoreToPlayer(-10); // Phạt -10đ khi sập cầu
+
+  els.collapseOverlay.classList.add('show');
+  els.bridgeStage.classList.add('shake');
+  setTimeout(()=>els.bridgeStage.classList.remove('shake'), 600);
+  showToast(`💥 FAILED! ${pName} lost 10 points.`);
+}
+
+function checkWinCondition() {
+  const r = currentRound();
+  if(r.type === 'fitb') {
+    const need = neededLetters(r.word);
+    const allFound = [...need].every(ch => state.guessed.has(ch));
+    if(allFound) onWin(false);
+  }
+}
+
+// Logic cho ô chữ
+function guessLetter(L){
+  if(state.solved || state.failed) return;
+  const keyBtn = document.getElementById('key'+L);
+  if(!keyBtn || keyBtn.disabled) return;
+  keyBtn.disabled = true;
+  
+  // Track manual guesses (-5pt each)
+  state.manualGuesses++;
+  
+  const r = currentRound();
+  if(r.word.includes(L)){
+    state.guessed.add(L);
+    keyBtn.classList.add('correct');
+    renderWord(r.word, state.guessed, false);
+    document.querySelectorAll('.letter-box').forEach(b=>{ if(b.textContent===L) b.classList.add('pop'); });
+    checkWinCondition();
+  } else {
+    keyBtn.classList.add('wrong');
+    fallPlank(state.wrong);
+    state.wrong++;
+    renderLives();
+    if(state.wrong >= PLANK_COUNT){ onFail(); }
+  }
+}
+
+// Logic cho trắc nghiệm
+function selectOption(idx){
+  if(state.solved || state.failed) return;
+  const btn = document.getElementById('opt'+idx);
+  if(btn.disabled) return;
+  const r = currentRound();
+  
+  if(idx === r.correct){
+    onWin(true);
+  } else {
+    btn.disabled = true;
+    btn.classList.add('wrong');
+    // Drop all planks instantly for MC questions
+    while(state.wrong < PLANK_COUNT){
+      fallPlank(state.wrong);
+      state.wrong++;
+    }
+    renderLives();
+    onFail();
+  }
+}
+
+/* ================= CONTROLS ================= */
+document.getElementById('revealBtn').addEventListener('click', ()=>{
+  if(state.solved || state.failed) return;
+  state.failed = true; // Mark as failed internally so they don't score
+  const r = currentRound();
+  
+  if (r.type === 'fitb') {
+    renderWord(r.word, state.guessed, true);
+    showToast('👁 Correct Answer Revealed');
+  } else {
+    markCorrectOption();
+    showToast('👁 Correct Answer: '+String.fromCharCode(65+r.correct));
+  }
+  lockRound();
+});
+
+document.getElementById('resetRoundBtn').addEventListener('click', ()=>{
+  renderRound();
+});
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(state.i >= rounds.length - 1){
+    showToast('All questions completed! Check the Leaderboard.');
+    burstConfetti();
+    return;
+  }
+  state.i++;
+  els.playerName.value = ''; // Clear for next student
+  renderRound();
+});
+
+document.getElementById('helpBtn').addEventListener('click', ()=>{
+  document.getElementById('rulesBox').classList.toggle('open');
+});
+
+/* ================= BGM / NHẠC NỀN ================= */
+const bgMusic = document.getElementById('bgMusic');
+const musicToggleBtn = document.getElementById('musicToggleBtn');
+let isMusicPlaying = false;
+
+// Đặt âm lượng nhạc nền (từ 0.0 đến 1.0) - Đặt 0.4 để nhạc không lấn át tiếng nói
+bgMusic.volume = 0.4; 
+
+musicToggleBtn.addEventListener('click', () => {
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    musicToggleBtn.textContent = '🎵 Bật nhạc';
+    isMusicPlaying = false;
+  } else {
+    bgMusic.play().catch(error => {
+      console.log("Trình duyệt chặn phát nhạc, cần người dùng click vào trang trước.");
+    });
+    musicToggleBtn.textContent = '🔇 Tắt nhạc';
+    isMusicPlaying = true;
+  }
+});
+
+/* ================= INIT ================= */
+renderRound();
+updateLeaderboard();
+</script>
+</body>
+</html>
